@@ -1,8 +1,8 @@
-﻿# Player_Music_Python
+﻿## Player_Music_Python
 
-![image](https://github.com/TheoLanles/Player_Music_Python/assets/62571239/878c6ba6-caac-4527-83b6-e78479f29028)
+![image](https://github.com/TheoLanles/Player_Music_Python/assets/62571239/cf0f34df-5c3c-434b-ba5a-83c64e21896c)
 
-To modify the access path you need to modify the config file :
+# To modify the access path you need to modify the config file :
 
 - To open the file in ```config\config.ini```
 - Modify path ```D:\Music```

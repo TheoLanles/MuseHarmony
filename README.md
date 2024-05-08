@@ -1,6 +1,8 @@
 ﻿## Player_Music_Python
 
-![image](https://github.com/TheoLanles/Player_Music_Python/assets/62571239/cf0f34df-5c3c-434b-ba5a-83c64e21896c)
+![image](https://github.com/TheoLanles/Player_Music_Python/assets/62571239/e46e1718-c3b8-432a-b1a7-e32ef2d9c7c2)
+
+![image](https://github.com/TheoLanles/Player_Music_Python/assets/62571239/4c49c926-b14a-49ba-941f-c786d2506aba)
 
 # To modify the access path you need to modify the config file :
 

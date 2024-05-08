@@ -14,19 +14,15 @@ from ttkbootstrap.constants import *
 from dark_title_bar import *
 from threading import Thread
 import time
+from ttkbootstrap.themes.standard import STANDARD_THEMES
+import tkinter.messagebox as messagebox
+import sys
 
 # Initialize Pygame
 pygame.mixer.init()
 
-# Create a Tkinter window
-fenetre = ttk.Window(themename='darkly')
-fenetre.title("Lecteur de Musique")
-fenetre.iconbitmap('res/logo.ico')
-
-dark_title_bar(fenetre)
-
-# Set a fixed size for the window
-fenetre.geometry("900x510")
+restart_button = None
+close_button = None
 
 # Load the configuration file
 config_file = "config/config.ini"
@@ -34,7 +30,20 @@ config = configparser.ConfigParser()
 config.read(config_file)
 
 # Get the music folder path from the configuration file
-music_folder_path = config.get("settings", "music_folder_path", fallback=os.path.expanduser("~")) 
+music_folder_path = config.get("settings", "music_folder_path", fallback=os.path.expanduser("~"))
+
+# Get the default ttkbootstrap theme from the configuration file
+default_theme = config.get("ttkbootstrap", "default_theme", fallback="darkly")
+
+# Create a Tkinter window
+fenetre = ttk.Window(themename=default_theme)
+fenetre.title("Music player")
+fenetre.iconbitmap('res/logo.ico')
+
+dark_title_bar(fenetre)
+
+# Set a fixed size for the window
+fenetre.geometry("915x510")
 
 # Create a dropdown list to display the playlist
 dropdown_list = tk.Listbox(fenetre, width=55, height=30)
@@ -47,7 +56,7 @@ playlist = []
 loop_state = tk.IntVar(value=0)
 
 # Variable to store the previous volume before muting
-previous_volume = 1 # Initial volume level
+previous_volume = 1.0 # Initial volume level
 
 # Function to load the library
 def load_library():
@@ -82,7 +91,7 @@ def start_application():
     # Load the library in a separate thread
     load_thread = Thread(target=load_library)
     load_thread.start()
-    
+
 # Function to start playing the music either normally or in loop
 def play_music_loop():
     if loop_state.get():
@@ -92,7 +101,7 @@ def play_music_loop():
         pygame.mixer.music.play()
 
 DEFAULT_COVER_PATH = "res/default.png"
-DEFAULT_STARTUP_IMAGE_PATH = "res/default.png" 
+DEFAULT_STARTUP_IMAGE_PATH = "res/default.png"
 
 # Function to open an audio file
 def open_file(path):
@@ -218,12 +227,86 @@ def toggle_mute():
         volume_scale.config(state="normal")
         volume_scale.set(100)
 
+def restart_application():
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
+
+def show_settings():
+    global restart_button
+    global close_button
+
+    # Hide the main window elements
+    dropdown_list.pack_forget()
+    display_frame.pack_forget()
+    progress_frame.pack_forget()
+    audio_control_frame.pack_forget()
+
+    # Create the settings UI in the main window
+    label_config = tk.Label(fenetre, text="Configure your music path", font=("Helvetica", 15))
+    label_config.pack(side=tk.TOP, pady=5)
+
+    # For example, add an entry to change the music folder path
+    music_folder_entry = ttk.Entry(fenetre, width=30)
+    music_folder_entry.pack(pady=10)
+    music_folder_entry.insert(0, music_folder_path)
+
+    label_config_theme = tk.Label(fenetre, text="Configuring your theme", font=("Helvetica", 15))
+    label_config_theme.pack(side=tk.TOP, pady=5)
+
+    # Create a dropdown menu for the ttkbootstrap themes
+    theme_var = tk.StringVar(fenetre)
+    theme_dropdown = ttk.OptionMenu(fenetre, theme_var, *STANDARD_THEMES)
+    theme_dropdown.pack(pady=10)
+
+    frame_setting = ttk.Frame(fenetre,width=915,height=19, style='dark')
+    frame_setting.pack(side=tk.BOTTOM, ipady=20, padx=0)
+    frame_setting.pack_propagate(0)
+
+    # Create a button to save the settings
+    save_button = ttk.Button(frame_setting, text="Save", command=lambda: save_settings(music_folder_entry.get(), theme_var.get(), restart_button),bootstyle=(OUTLINE))
+    save_button.pack(side=tk.RIGHT,ipadx=30, padx=5)
+
+    # Create a button to close the settings window
+    close_button = ttk.Button(frame_setting, text="Close", command=restore_main_window)
+    close_button.pack(side=tk.RIGHT,padx=5)
+
+    restart_button = ttk.Button(frame_setting, text="Restart", command=restart_application, state=DISABLED)
+    restart_button.pack(side=tk.RIGHT,padx=5)
+
+def save_settings(new_music_folder_path, new_theme, restart_button):
+    config.set("settings", "music_folder_path", new_music_folder_path)
+    config.set("ttkbootstrap", "default_theme", new_theme)
+    with open(config_file, "w") as configfile:
+        config.write(configfile)
+
+    # Update the global music_folder_path variable
+    global music_folder_path
+    music_folder_path = new_music_folder_path
+
+    # Update the global default_theme variable
+    global default_theme
+    default_theme = new_theme
+
+     # If the theme has been changed, show a popup message to inform the user to restart the application
+    if fenetre.style.theme_use() != new_theme:
+        restart_button.state(['!disabled'])
+        close_button.pack_forget()
+    else:
+        restart_button.state(['disabled'])
+        close_button.pack(pady=10)
+    default_theme = new_theme
+
+    # Reload the library with the new music folder path
+    load_library()
+
+    # Update the window's theme
+    fenetre.change_theme(new_theme)
 
 # Bind the play_file function to the ListboxSelect event
 dropdown_list.bind('<<ListboxSelect>>', play_file)
 
 # Create a frame for the cover art, title, and artist display
-display_frame = tk.Frame(fenetre)
+display_frame = ttk.Frame(fenetre)
 display_frame.pack(side=tk.TOP, pady=10)
 
 # Create a label for the cover art
@@ -236,11 +319,11 @@ label_cover_art.config(image=default_startup_image_tk)
 label_cover_art.image = default_startup_image_tk
 
 # Create a label for the title
-label_title = tk.Label(display_frame, text="Title", font=("Helvetica", 12))
+label_title = ttk.Label(display_frame, text="Title", font=("Helvetica", 12))
 label_title.pack(side=tk.TOP, pady=5)
 
 # Create a label for the artist
-label_artist = tk.Label(display_frame, text="Artist", font=("Helvetica", 15, "bold"))
+label_artist = ttk.Label(display_frame, text="Artist", font=("Helvetica", 15, "bold"))
 label_artist.pack(side=tk.TOP, pady=3)
 
 # Create a frame for the progress bar and time display
@@ -256,8 +339,9 @@ label_time = tk.Label(progress_frame, text="0:00 / 0:00",  font=("Helvetica", 9)
 label_time.pack(side=tk.LEFT, padx=5)
 
 # Create a frame for the audio control buttons
-audio_control_frame = tk.Frame(fenetre)
-audio_control_frame.pack(side=tk.TOP, pady=10, padx=0)
+audio_control_frame = ttk.Frame(fenetre,width=915,height=60, style='dark')
+audio_control_frame.pack(side=tk.TOP, pady=0, padx=0)
+audio_control_frame.pack_propagate(0)
 
 # Create buttons to open, play, and stop the music, and load the library
 open_button = ttk.Button(audio_control_frame, text="Load Library", command=load_library, bootstyle=(OUTLINE))
@@ -273,17 +357,47 @@ loop_button = ttk.Button(audio_control_frame, text="Loop", command=toggle_loop)
 loop_button.pack(side=tk.LEFT, padx=5)
 
 # Create a scale for volume control
-volume_scale = ttk.Scale(audio_control_frame, from_=0, to=100, orient=tk.HORIZONTAL, command=set_volume)
+volume_scale = tk.Scale(audio_control_frame, from_=0, to=100, orient=ttk.HORIZONTAL, command=set_volume)
 volume_scale.set(100)  # Set initial volume to 100%
-volume_scale.pack(side=tk.LEFT, padx=10)
+volume_scale.pack(side=ttk.LEFT, padx=10)
 
 # Create a button for mute/unmute
 mute_button = ttk.Button(audio_control_frame, text="Mute", command=toggle_mute)
 mute_button.pack(side=tk.LEFT, padx=5)
 
+settings_button = ttk.Button(audio_control_frame, text="Settings", command=show_settings)
+settings_button.pack(side=tk.LEFT, padx=5)
+
 # Function to start updating the progress bar
 def start_progress_update():
     update_progress_bar()
+
+def restore_main_window():
+    global restart_button
+    global close_button
+
+    # Remove the settings elements from the main window
+    for widget in fenetre.winfo_children():
+        if widget not in main_window_elements:
+            widget.destroy()
+
+    # Repack the main window elements
+    for window_element, config in main_window_elements_pack_config:
+        window_element.pack(**config)
+
+    # Reset the restart and close buttons
+    restart_button = None
+    close_button = None
+
+# Define your main window elements and their pack configurations
+main_window_elements_pack_config = [
+    (dropdown_list, {"side": tk.LEFT, "padx": 10, "pady": 6}),
+    (display_frame, {"side": tk.TOP, "pady": 10}),
+    (progress_frame, {"side": tk.TOP, "pady": 10}),
+    (audio_control_frame, {"side": tk.TOP, "pady": 0, "padx": 0})
+]
+
+main_window_elements = [dropdown_list, display_frame, progress_frame, audio_control_frame]
 
 # Start the Tkinter event loop
 fenetre.after(0, start_progress_update)

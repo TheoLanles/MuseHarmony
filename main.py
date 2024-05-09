@@ -258,7 +258,7 @@ def show_settings():
     music_folder_entry.insert(0, music_folder_path)
 
     modify_button = ttk.Button(fenetre, text="Modifier", command=select_music_folder)
-    modify_button.pack(pady=5)
+    modify_button.pack(pady=10)
 
     label_config_theme = ttk.Label(fenetre, text="Configuring your theme", font=("Helvetica", 15))
     label_config_theme.pack(side=tk.TOP, pady=5)
@@ -270,12 +270,15 @@ def show_settings():
     theme_dropdown = ttk.OptionMenu(fenetre, theme_var, *STANDARD_THEMES)
     theme_dropdown.pack(pady=10)
 
+    modify_theme_button = ttk.Button(fenetre, text="Modifier", command=lambda: theme_settings(theme_var.get(), restart_button))
+    modify_theme_button.pack(pady=5)
+
     frame_setting = ttk.Frame(fenetre,width=915,height=19, style='dark')
     frame_setting.pack(side=tk.BOTTOM, ipady=20, padx=0)
     frame_setting.pack_propagate(0)
 
     # Create a button to save the settings
-    save_button = ttk.Button(frame_setting, text="Save", command=lambda: save_settings(music_folder_entry.get(), theme_var.get(), restart_button),bootstyle=(OUTLINE))
+    save_button = ttk.Button(frame_setting, text="Save", command=lambda: save_settings(music_folder_entry.get()),bootstyle=(OUTLINE))
     save_button.pack(side=tk.RIGHT,ipadx=30, padx=5)
 
     # Create a button to close the settings window
@@ -285,15 +288,22 @@ def show_settings():
     restart_button = ttk.Button(frame_setting, text="Restart", command=restart_application, state=DISABLED)
     restart_button.pack(side=tk.RIGHT,padx=5)
 
-def save_settings(new_music_folder_path, new_theme, restart_button):
+def save_settings(new_music_folder_path):
     config.set("settings", "music_folder_path", new_music_folder_path)
-    config.set("ttkbootstrap", "default_theme", new_theme)
     with open(config_file, "w") as configfile:
         config.write(configfile)
 
     # Update the global music_folder_path variable
     global music_folder_path
     music_folder_path = new_music_folder_path
+
+    # Reload the library with the new music folder path
+    load_library()
+
+def theme_settings(new_theme, restart_button):
+    config.set("ttkbootstrap", "default_theme", new_theme)
+    with open(config_file, "w") as configfile:
+        config.write(configfile)
 
     # Update the global default_theme variable
     global default_theme
@@ -307,9 +317,6 @@ def save_settings(new_music_folder_path, new_theme, restart_button):
         restart_button.state(['disabled'])
         close_button.pack(pady=10)
     default_theme = new_theme
-
-    # Reload the library with the new music folder path
-    load_library()
 
     # Update the window's theme
     fenetre.change_theme(new_theme)

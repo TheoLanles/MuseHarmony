@@ -257,7 +257,7 @@ def show_settings():
     music_folder_entry.pack(pady=5)
     music_folder_entry.insert(0, music_folder_path)
 
-    modify_button = ttk.Button(fenetre, text="Modifier", command=select_music_folder)
+    modify_button = ttk.Button(fenetre, text="Change", command=select_music_folder)
     modify_button.pack(pady=10)
 
     label_config_theme = ttk.Label(fenetre, text="Configuring your theme", font=("Helvetica", 15))
@@ -270,7 +270,7 @@ def show_settings():
     theme_dropdown = ttk.OptionMenu(fenetre, theme_var, *STANDARD_THEMES)
     theme_dropdown.pack(pady=10)
 
-    modify_theme_button = ttk.Button(fenetre, text="Modifier", command=lambda: theme_settings(theme_var.get(), restart_button))
+    modify_theme_button = ttk.Button(fenetre, text="Change", command=lambda: theme_settings(theme_var.get(), restart_button))
     modify_theme_button.pack(pady=5)
 
     frame_setting = ttk.Frame(fenetre,width=915,height=19, style='dark')

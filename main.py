@@ -17,6 +17,7 @@ import time
 from ttkbootstrap.themes.standard import STANDARD_THEMES
 import tkinter.messagebox as messagebox
 import sys
+from tkinter import filedialog
 
 # Initialize Pygame
 pygame.mixer.init()
@@ -242,19 +243,31 @@ def show_settings():
     audio_control_frame.pack_forget()
 
     # Create the settings UI in the main window
-    label_config = tk.Label(fenetre, text="Configure your music path", font=("Helvetica", 15))
+    label_config = ttk.Label(fenetre, text="Configure your music path", font=("Helvetica", 15))
     label_config.pack(side=tk.TOP, pady=5)
+
+    def select_music_folder():
+        new_music_folder_path = filedialog.askdirectory()
+        if new_music_folder_path:
+            music_folder_entry.delete(0, tk.END)
+            music_folder_entry.insert(0, new_music_folder_path)
 
     # For example, add an entry to change the music folder path
     music_folder_entry = ttk.Entry(fenetre, width=30)
-    music_folder_entry.pack(pady=10)
+    music_folder_entry.pack(pady=5)
     music_folder_entry.insert(0, music_folder_path)
+    music_folder_entry.state(['readonly'])
 
-    label_config_theme = tk.Label(fenetre, text="Configuring your theme", font=("Helvetica", 15))
+    modify_button = ttk.Button(fenetre, text="Modifier", command=select_music_folder)
+    modify_button.pack(pady=5)
+
+    label_config_theme = ttk.Label(fenetre, text="Configuring your theme", font=("Helvetica", 15))
     label_config_theme.pack(side=tk.TOP, pady=5)
 
     # Create a dropdown menu for the ttkbootstrap themes
     theme_var = tk.StringVar(fenetre)
+    current_theme = fenetre.style.theme_use()  # Récupérez le thème actuellement utilisé
+    theme_var.set(current_theme)  # Définissez le thème actuel par défaut
     theme_dropdown = ttk.OptionMenu(fenetre, theme_var, *STANDARD_THEMES)
     theme_dropdown.pack(pady=10)
 

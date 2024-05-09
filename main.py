@@ -256,7 +256,6 @@ def show_settings():
     music_folder_entry = ttk.Entry(fenetre, width=30)
     music_folder_entry.pack(pady=5)
     music_folder_entry.insert(0, music_folder_path)
-    music_folder_entry.state(['readonly'])
 
     modify_button = ttk.Button(fenetre, text="Modifier", command=select_music_folder)
     modify_button.pack(pady=5)

@@ -1,0 +1,18 @@
+{
+    "hello": "Hello",
+    "settings": "Settings",
+    "mute": "Mute",
+    "loop": "Loop",
+    "play": "Play",
+    "pause": "Pause",
+    "load_library": "Load library",
+    "title": "Title",
+    "artist": "Artist",
+    "restart": "Restart",
+    "close": "Close",
+    "save": "Save",
+    "change": "Change",
+    "config_path": "Configure your music path :",
+    "config_theme": "Configure your theme :",
+    "config_lang": "Configure your language :"
+}

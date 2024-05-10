@@ -12,6 +12,7 @@
     "close": "Fermer",
     "save": "Sauvegarder",
     "change": "Changer",
-    "config_path": "Configurez votre chemin musical",
-    "config_theme": "Configurez votre theme"
+    "config_path": "Configurez votre chemin musical :",
+    "config_theme": "Configurez votre theme :",
+    "config_lang": "Configurez votre langue :"
 }

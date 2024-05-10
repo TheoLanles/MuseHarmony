@@ -56,6 +56,17 @@ def get_language():
     lang = config.get('language', 'lang')
     return lang
 
+def load_translations():
+    global translations
+    with open('lang/english.json') as f:
+        en = json.load(f)
+    with open('lang/francais.json') as f:
+        fr = json.load(f)
+    if get_language == 'English':
+        translations = en
+    elif get_language == 'Français':
+        translations = fr
+
 # Utilise le dictionnaire de traductions pour récupérer les chaînes de caractères traduites
 translations = get_translations()
 print(translations['hello'])
@@ -292,10 +303,22 @@ def show_settings():
     current_theme = fenetre.style.theme_use()  # Récupérez le thème actuellement utilisé
     theme_var.set(current_theme)  # Définissez le thème actuel par défaut
     theme_dropdown = ttk.OptionMenu(fenetre, theme_var, *STANDARD_THEMES)
-    theme_dropdown.pack(pady=10)
+    theme_dropdown.pack(pady=5)
 
     modify_theme_button = ttk.Button(fenetre,  text=translations['change'], command=lambda: theme_settings(theme_var.get(), restart_button))
     modify_theme_button.pack(pady=10)
+
+    label_config_lang = ttk.Label(fenetre, text=translations['config_lang'], font=('Helvetica', 15))
+    label_config_lang.pack(pady=5)
+
+    lang = ['english', 'francais']
+    lang_var = tk.StringVar(fenetre)
+    lang_var.set(get_language)
+    lang_menu = ttk.OptionMenu(fenetre, lang_var, *lang)
+    lang_menu.pack(pady=5)
+
+    modify_lang = ttk.Button(fenetre, text=translations['change'], command=lambda: save_lang(lang_var.get()))
+    modify_lang.pack(pady=10)
 
     frame_setting = ttk.Frame(fenetre,width=990,height=19, style='dark')
     frame_setting.pack(side=tk.BOTTOM, ipady=20, padx=0)
@@ -346,6 +369,22 @@ def theme_settings(new_theme, restart_button):
     # Update the window's theme
     fenetre.change_theme(new_theme)
     
+def save_lang(lang):
+    config.set("language", "lang", lang)
+    with open(config_file, "w") as configfile:
+        config.write(configfile)
+
+    # Update the global language variable
+    global get_language
+    get_language = lang
+    # Reload the translations with the new language
+    load_translations()
+    # Hide the "Close" button and show the "Restart" button
+    close_button.pack_forget()
+    restart_button.state(['!disabled'])
+    restart_button.pack(side=tk.RIGHT, padx=5)
+    
+
 # Bind the play_file function to the ListboxSelect event
 dropdown_list.bind('<<ListboxSelect>>', play_file)
 

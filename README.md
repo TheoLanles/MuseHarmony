@@ -2,8 +2,9 @@
 
 Player page :
 
-![image](https://github.com/TheoLanles/Player_Music_Python/assets/62571239/db207f86-fc83-4a5a-ba14-d6d6b6f75c51)
+![image](https://github.com/TheoLanles/MuseHarmony/assets/62571239/bd9945cc-3766-46ec-a8bd-637cf21ba067)
 
 Settings page :
 
-![image](https://github.com/TheoLanles/Player_Music_Python/assets/62571239/9315d76e-3826-41ea-a75f-8b3642eb5623)
+![image](https://github.com/TheoLanles/MuseHarmony/assets/62571239/3dd1a497-349b-4d83-8d2f-a940dfce787d)
+

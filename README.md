@@ -6,8 +6,7 @@ Player page :
 
 Settings page :
 
-![image](https://github.com/TheoLanles/MuseHarmony/assets/62571239/3dd1a497-349b-4d83-8d2f-a940dfce787d)
+![image](https://github.com/TheoLanles/MuseHarmony/assets/62571239/b5814e61-0c77-44cf-9fe5-29c6efce8e24)
 
-The config file : 
 
-![image](https://github.com/TheoLanles/MuseHarmony/assets/62571239/3c8f4e0f-fafe-41c2-a51d-347843dca656)
+

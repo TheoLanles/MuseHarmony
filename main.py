@@ -62,7 +62,7 @@ print(translations['hello'])
 
 # Create a Tkinter window
 fenetre = ttk.Window(themename=default_theme)
-fenetre.title("Music player")
+fenetre.title("MuseHarmony")
 fenetre.iconbitmap('res/logo.ico')
 
 dark_title_bar(fenetre)

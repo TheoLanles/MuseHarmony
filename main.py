@@ -62,24 +62,31 @@ def load_translations():
         en = json.load(f)
     with open('lang/francais.json') as f:
         fr = json.load(f)
+    with open('lang/espagnol.json') as f:
+        es = json.load(f)
     if get_language == 'English':
         translations = en
     elif get_language == 'Français':
         translations = fr
+    elif get_language == 'Espagnol':
+        translations = es
 
 # Utilise le dictionnaire de traductions pour récupérer les chaînes de caractères traduites
 translations = get_translations()
 print(translations['hello'])
 
+window_title = "MuseHarmony"
+app_name = "MuseHarmony"
+
 # Create a Tkinter window
 fenetre = ttk.Window(themename=default_theme)
-fenetre.title("MuseHarmony")
+fenetre.title(window_title)
 fenetre.iconbitmap('res/logo.ico')
 
 dark_title_bar(fenetre)
 
 # Set a fixed size for the window
-fenetre.geometry("845x510")
+fenetre.geometry("780x510")
 
 # Create a dropdown list to display the playlist
 dropdown_list = tk.Listbox(fenetre, width=55, height=32)
@@ -102,7 +109,7 @@ def load_library():
     music_folder_path = config.get("settings", "music_folder_path")
 
     # List of supported audio formats
-    supported_audio_formats = ['.mp3', '.wav', '.ogg', '.flac']
+    supported_audio_formats = ['.mp3', '.flac']
 
     # Traverse the music folder and add all audio files to the dropdown list and playlist
     for root, dirs, files in os.walk(music_folder_path):
@@ -128,6 +135,12 @@ def toggle_loop():
     loop_button.config(bootstyle="outline" if loop_state.get() else "default")
     play_music_loop()
 
+def toggle_loop_key(event):
+    global loop_state
+    loop_state.set(not loop_state.get())
+    loop_button.config(bootstyle="outline" if loop_state.get() else "default")
+    play_music_loop()
+
 # Function to start the application
 def start_application():
     # Load the library in a separate thread
@@ -145,11 +158,19 @@ def play_music_loop():
 DEFAULT_COVER_PATH = "res/default.png"
 DEFAULT_STARTUP_IMAGE_PATH = "res/default.png"
 
+def update_window_title():
+    global window_title, app_name
+    fenetre.title(f"{app_name} - {window_title}")
+
 # Function to open an audio file
 def open_file(path):
     global file_path, current_music_info
+    global window_title
     file_path = path
+    base_name, ext = os.path.splitext(file_path)
     pygame.mixer.music.load(file_path)
+    window_title = os.path.basename(base_name) if base_name else "MuseHarmony"
+    update_window_title()
 
     # Initialize total_time
     total_time = 0
@@ -199,9 +220,31 @@ def open_file(path):
 def play_music():
     pygame.mixer.music.play()
 
-# Function to stop the music
-def pause_music():
-    pygame.mixer.music.pause()
+# Function to toggle mute
+def toggle_pause():
+     global is_playing
+
+     if pygame.mixer.music.get_busy():
+        pygame.mixer.music.pause()
+        is_playing = False
+        pause_button.config(text=translations['play'], bootstyle="outline")
+     else:
+        pygame.mixer.music.unpause()
+        is_playing = True
+        pause_button.config(text=translations['pause'], bootstyle="default")
+
+# Function to toggle mute
+def toggle_pause_key(event):
+     global is_playing
+
+     if pygame.mixer.music.get_busy():
+        pygame.mixer.music.pause()
+        is_playing = False
+        pause_button.config(text=translations['play'], bootstyle="outline")
+     else:
+        pygame.mixer.music.unpause()
+        is_playing = True
+        pause_button.config(text=translations['pause'], bootstyle="default")
 
 # Function to stop the music
 def stop_music():
@@ -269,6 +312,19 @@ def toggle_mute():
         volume_scale.config(state="normal")
         volume_scale.set(100)
 
+# Function to toggle mute
+def toggle_mute_key(event):
+    if pygame.mixer.music.get_volume() > 0:
+        pygame.mixer.music.set_volume(0)
+        mute_button.config(text="Unmute", bootstyle="outline")
+        volume_scale.set(0)
+        volume_scale.config(state="disabled")
+    else:
+        pygame.mixer.music.set_volume(previous_volume)
+        mute_button.config(text="Mute", bootstyle="default")
+        volume_scale.config(state="normal")
+        volume_scale.set(100)
+
 def restart_application():
     python = sys.executable
     os.execl(python, python, *sys.argv)
@@ -317,7 +373,7 @@ def show_settings():
     label_config_lang = ttk.Label(fenetre, text=translations['config_lang'], font=('Helvetica', 15))
     label_config_lang.pack(pady=5)
 
-    lang = ['english', 'francais']
+    lang = ['english', 'francais', 'espagnol']
     lang_var = tk.StringVar(fenetre)
     lang_var.set(get_language)
     lang_menu = ttk.OptionMenu(fenetre, lang_var, *lang)
@@ -413,14 +469,14 @@ label_title.pack(side=tk.TOP, pady=5)
 
 # Create a label for the artist
 label_artist = ttk.Label(display_frame, text=translations['artist'], font=("Helvetica", 15, "bold"))
-label_artist.pack(side=tk.TOP, pady=3)
+label_artist.pack(side=tk.TOP, pady=0)
 
 # Create a frame for the progress bar and time display
 progress_frame = tk.Frame(fenetre)
-progress_frame.pack(side=tk.TOP, pady=10)
+progress_frame.pack(side=tk.TOP, pady=6)
 
 # Create a progress bar
-progress_bar = ttk.Progressbar(progress_frame, orient="horizontal", length=400, mode="determinate")
+progress_bar = ttk.Progressbar(progress_frame, orient="horizontal", length=335, mode="determinate")
 progress_bar.pack(side=tk.LEFT, padx=5)
 
 # Create a time display
@@ -428,15 +484,12 @@ label_time = tk.Label(progress_frame, text="0:00 / 0:00",  font=("Helvetica", 9)
 label_time.pack(side=tk.LEFT, padx=5)
 
 # Create a frame for the audio control buttons
-audio_control_frame = ttk.Frame(fenetre,width=915,height=60, style='dark')
+audio_control_frame = ttk.Frame(fenetre,width=915,height=75, style='dark')
 audio_control_frame.pack(side=tk.TOP, pady=0, padx=0)
 audio_control_frame.pack_propagate(0)
 
-pause_button = ttk.Button(audio_control_frame, text=translations['pause'], command=pause_music)
+pause_button = ttk.Button(audio_control_frame, text=translations['pause'], command=toggle_pause)
 pause_button.pack(side=tk.LEFT, padx=5)
-
-resume_button = ttk.Button(audio_control_frame, text=translations['play'], command=resume_music)
-resume_button.pack(side=tk.LEFT, padx=5)
 
 loop_button = ttk.Button(audio_control_frame, text=translations['loop'], command=toggle_loop)
 loop_button.pack(side=tk.LEFT, padx=5)
@@ -486,4 +539,7 @@ main_window_elements = [dropdown_list, display_frame, progress_frame, audio_cont
 
 # Start the Tkinter event loop
 fenetre.after(0, start_progress_update)
+fenetre.bind('<m>', toggle_mute_key)
+fenetre.bind('<l>', toggle_loop_key)
+fenetre.bind('<space>', toggle_pause_key)
 fenetre.mainloop()

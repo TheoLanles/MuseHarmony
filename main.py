@@ -79,10 +79,10 @@ fenetre.iconbitmap('res/logo.ico')
 dark_title_bar(fenetre)
 
 # Set a fixed size for the window
-fenetre.geometry("985x510")
+fenetre.geometry("845x510")
 
 # Create a dropdown list to display the playlist
-dropdown_list = tk.Listbox(fenetre, width=55, height=30)
+dropdown_list = tk.Listbox(fenetre, width=55, height=32)
 dropdown_list.pack(side=tk.LEFT, padx=10, pady=6)
 
 # Variable to store the playlist
@@ -94,17 +94,23 @@ loop_state = tk.IntVar(value=0)
 # Variable to store the previous volume before muting
 previous_volume = 1.0 # Initial volume level
 
-# Function to load the library
 def load_library():
-    global playlist
-    # Scan the directory and add all audio files to the playlist
-    playlist = []
-    for extension in ['*.flac', '*.mp3']:
-        playlist.extend(glob.glob(os.path.join(music_folder_path, extension)))
-
-    # Update the dropdown list
+    # Clear the dropdown list
     dropdown_list.delete(0, tk.END)
-    dropdown_list.insert(tk.END, *[os.path.basename(file) for file in playlist])
+
+    # Get the path of the music folder
+    music_folder_path = config.get("settings", "music_folder_path")
+
+    # List of supported audio formats
+    supported_audio_formats = ['.mp3', '.wav', '.ogg', '.flac']
+
+    # Traverse the music folder and add all audio files to the dropdown list and playlist
+    for root, dirs, files in os.walk(music_folder_path):
+        for file in files:
+            if file.endswith(tuple(supported_audio_formats)):
+                file_path = os.path.join(root, file)
+                dropdown_list.insert(tk.END, os.path.basename(file))
+                playlist.append(file_path)
 
 # Variable to store the file path of the audio file
 file_path = None
@@ -425,10 +431,6 @@ label_time.pack(side=tk.LEFT, padx=5)
 audio_control_frame = ttk.Frame(fenetre,width=915,height=60, style='dark')
 audio_control_frame.pack(side=tk.TOP, pady=0, padx=0)
 audio_control_frame.pack_propagate(0)
-
-# Create buttons to open, play, and stop the music, and load the library
-open_button = ttk.Button(audio_control_frame, text=translations['load_library'], command=load_library, bootstyle=(OUTLINE))
-open_button.pack(side=tk.LEFT, padx=5)
 
 pause_button = ttk.Button(audio_control_frame, text=translations['pause'], command=pause_music)
 pause_button.pack(side=tk.LEFT, padx=5)

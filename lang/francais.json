@@ -13,5 +13,6 @@
     "change": "Changer",
     "config_path": "Configurez votre chemin musical :",
     "config_theme": "Configurez votre theme :",
-    "config_lang": "Configurez votre langue :"
+    "config_lang": "Configurez votre langue :",
+    "music": "Musique"
 }

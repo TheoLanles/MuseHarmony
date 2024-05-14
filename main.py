@@ -89,7 +89,9 @@ dark_title_bar(fenetre)
 fenetre.geometry("780x510")
 
 # Create a dropdown list to display the playlist
-dropdown_list = tk.Listbox(fenetre, width=55, height=32)
+dropdown_list = ttk.Treeview(fenetre, columns=("#1"), height=100 , show="headings")
+dropdown_list.heading("#1", text=translations['music'])
+dropdown_list.column("#1", width=300, anchor=tk.W)
 dropdown_list.pack(side=tk.LEFT, padx=10, pady=6)
 
 # Variable to store the playlist
@@ -102,8 +104,9 @@ loop_state = tk.IntVar(value=0)
 previous_volume = 1.0 # Initial volume level
 
 def load_library():
-    # Clear the dropdown list
-    dropdown_list.delete(0, tk.END)
+
+     # Clear the dropdown list
+    dropdown_list.delete(*dropdown_list.get_children())
 
     # Get the path of the music folder
     music_folder_path = config.get("settings", "music_folder_path")
@@ -116,7 +119,8 @@ def load_library():
         for file in files:
             if file.endswith(tuple(supported_audio_formats)):
                 file_path = os.path.join(root, file)
-                dropdown_list.insert(tk.END, os.path.basename(file))
+                file_index = len(dropdown_list.get_children())
+                dropdown_list.insert("", tk.END, id=file_index, values=(os.path.basename(file),))
                 playlist.append(file_path)
 
 # Variable to store the file path of the audio file
@@ -253,10 +257,10 @@ def stop_music():
 # Function to play a file from the playlist
 def play_file(event=None):
     global file_path
-    if dropdown_list.curselection():
-        index = dropdown_list.curselection()[0]
-        if 0 <= index < len(playlist):
-            file_path = playlist[index]
+    if dropdown_list.selection():
+        index = dropdown_list.selection()[0]
+        if 0 <= dropdown_list.index(index) < len(playlist):
+            file_path = playlist[dropdown_list.index(index)]
             stop_music()
             open_file(file_path)
             play_music()
@@ -448,7 +452,7 @@ def save_lang(lang):
     
 
 # Bind the play_file function to the ListboxSelect event
-dropdown_list.bind('<<ListboxSelect>>', play_file)
+dropdown_list.bind('<<TreeviewSelect>>', play_file)
 
 # Create a frame for the cover art, title, and artist display
 display_frame = ttk.Frame(fenetre)

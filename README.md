@@ -6,4 +6,4 @@ Player page :
 
 Settings page :
 
-![image](https://github.com/TheoLanles/MuseHarmony/assets/62571239/e6b6f2b0-cb1a-4515-8f5b-3fda0933669b)
+![image](https://github.com/TheoLanles/MuseHarmony/assets/62571239/e3afff4a-b0d1-48ca-b61e-cd023f358903)

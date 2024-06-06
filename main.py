@@ -5,6 +5,7 @@ import os
 import glob
 from mutagen.flac import FLAC
 from mutagen.mp3 import MP3
+from mutagen.wave import WAVE
 from mutagen.id3 import ID3, APIC
 from PIL import Image, ImageTk
 import io
@@ -19,6 +20,7 @@ import tkinter.messagebox as messagebox
 import sys
 from tkinter import filedialog
 import json
+import wave
 
 # Initialize Pygame
 pygame.mixer.init()
@@ -112,7 +114,7 @@ def load_library():
     music_folder_path = config.get("settings", "music_folder_path")
 
     # List of supported audio formats
-    supported_audio_formats = ['.mp3', '.flac']
+    supported_audio_formats = ['.mp3', '.flac', '.wav']
 
     # Traverse the music folder and add all audio files to the dropdown list and playlist
     for root, dirs, files in os.walk(music_folder_path):
@@ -192,6 +194,10 @@ def open_file(path):
         artist = audio.get('TPE1', ['Unknown'])[0]
         cover_art = audio.tags.getall('APIC') if audio.tags.getall('APIC') else None
         total_time = audio.info.length
+    elif file_path.endswith('.wav'):
+     with wave.open(file_path, 'rb') as audio:
+        total_time = audio.getnframes() / audio.getframerate()
+        title, artist, cover_art = os.path.splitext(os.path.basename(file_path))[0], "Unknown", None
     else:
         title = ""
         artist = ""

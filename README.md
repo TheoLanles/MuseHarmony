@@ -2,9 +2,8 @@
 
 Player page :
 
-![image](https://github.com/TheoLanles/MuseHarmony/assets/62571239/6ac906c4-453b-4d0c-808a-ee3bacba9616)
+![image](https://github.com/user-attachments/assets/8cd0360d-df46-43d7-9f08-b662fa7ee857)
 
 Settings page :
 
-![image](https://github.com/TheoLanles/MuseHarmony/assets/62571239/65ca5c0b-464a-4cc9-9738-1f07ffedb99e)
-
+![image](https://github.com/user-attachments/assets/513ca921-4656-4dd8-b255-c1a18445c978)

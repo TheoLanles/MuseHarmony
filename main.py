@@ -367,7 +367,7 @@ def show_settings():
     modify_button = ttk.Button(fenetre,  text=translations['change'], command=select_music_folder)
     modify_button.pack(pady=10)
 
-    label_config_theme = ttk.Label(fenetre, text=translations['config_path'], font=("Helvetica", 15))
+    label_config_theme = ttk.Label(fenetre, text=translations['config_theme'], font=("Helvetica", 15))
     label_config_theme.pack(side=tk.TOP, pady=5)
 
     # Create a dropdown menu for the ttkbootstrap themes
